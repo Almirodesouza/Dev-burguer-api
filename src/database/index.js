@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import databaseConfig from '../config/database.cjs';
-import User  from '../app/models/User.js';
+import User from '../app/models/User.js';
 import Products from '../app/models/Products.js';
 import Categories from '../app/models/Categories.js';
 
@@ -12,8 +12,12 @@ class Database {
   }
 
   init() {
-    this.connection =  new Sequelize(databaseConfig);
-    models.map((model) => model.init(this.connection));
+    this.connection = new Sequelize(databaseConfig);
+    models
+      .map((model) => model.init(this.connection))
+      .map(
+        (model) => model.associate && model.associate(this.connection.models),
+      );
   }
 }
 

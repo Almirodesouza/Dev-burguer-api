@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import authConfig from '../config/auth.js';
 
-const authmiddleware = (request, response, next) => {
+const authMiddleware = (request, response, next) => {
   const authToken = request.headers.authorization;
 
   if (!authToken) {
@@ -17,6 +17,7 @@ const authmiddleware = (request, response, next) => {
       }
 
       request.userId = decoded.id;
+      request.userIsAdmin = decoded.admin;
     });
   } catch (_error) {
     return response.status(401).json({ error: 'Token is invalid' });
@@ -25,4 +26,4 @@ const authmiddleware = (request, response, next) => {
   return next();
 };
 
-export default authmiddleware;
+export default authMiddleware;

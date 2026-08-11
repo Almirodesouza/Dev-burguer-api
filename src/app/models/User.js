@@ -2,7 +2,7 @@ import Sequelize, { Model } from 'sequelize';
 
 class User extends Model {
   static init(sequelize) {
-    // biome-ignore lint/complexity/noThisInStatic: Sequelize pattern
+    
     super.init(
       {
         id: {
@@ -21,6 +21,8 @@ class User extends Model {
         modelName: 'User',
       },
     );
+
+    return this;
   }
 }
 

@@ -13,9 +13,18 @@ class CategoriesController {
       return response.status(400).json({ error: error.errors });
     }
 
-    const {name} = request.body;
+    const { name } = request.body;
+    const {filename} = request.file;
+
+    const existCategory = await Categories.findOne({ where: { name } });
+
+    if (existCategory) {
+      return response.status(400).json({ error: 'Category already exists' });
+    }
+
     const newCategory = await Categories.create({
       name,
+      path: filename,
     });
 
     return response.status(201).json(newCategory);
@@ -27,7 +36,5 @@ class CategoriesController {
     return response.status(200).json(categories);
   }
 }
-
-
 
 export default new CategoriesController();
