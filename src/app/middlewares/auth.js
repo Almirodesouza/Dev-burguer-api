@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import authConfig from '../config/auth.js';
+import authConfig from '../../config/auth.js';
 
 const authMiddleware = (request, response, next) => {
   const authToken = request.headers.authorization;
@@ -18,6 +18,8 @@ const authMiddleware = (request, response, next) => {
 
       request.userId = decoded.id;
       request.userIsAdmin = decoded.admin;
+      request.userName = decoded.name;
+
     });
   } catch (_error) {
     return response.status(401).json({ error: 'Token is invalid' });

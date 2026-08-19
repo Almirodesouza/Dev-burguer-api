@@ -3,10 +3,11 @@ import userController from './app/controllers/userController.js';
 import loginController from './app/controllers/loginController.js';
 import productsController from './app/controllers/productsController.js';
 import categoriesController from './app/controllers/categoriesController.js';
+import orderController from './app/controllers/orderController.js';
 import multer from 'multer';
 import multerConfig from './config/multer.cjs';
-import authMiddleware from './middlewares/auth.js';
-import adminMiddleware from './middlewares/admin.js';
+import authMiddleware from './app/middlewares/auth.js';
+import adminMiddleware from './app/middlewares/admin.js';
 
 const routes = new Router();
 
@@ -36,6 +37,18 @@ routes.post(
   adminMiddleware,
   categoriesController.store,
 );
+
+routes.put(
+  '/categories/:id',
+  uploud.single('file'),
+  adminMiddleware,
+  categoriesController.update,
+);
+
 routes.get('/categories', categoriesController.index);
+
+routes.post('/orders', orderController.store);
+routes.get('/orders', orderController.index);
+routes.put('/orders/:id', adminMiddleware, orderController.update);
 
 export default routes;
