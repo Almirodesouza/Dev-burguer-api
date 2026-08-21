@@ -23,6 +23,7 @@ Construída com **Node.js + Express**, usando **PostgreSQL** (via Sequelize) par
 - [Modelos de dados](#modelos-de-dados)
 - [Upload de imagens](#upload-de-imagens)
 - [Migrations](#migrations)
+- [Problemas conhecidos](#problemas-conhecidos)
 - [Roadmap / melhorias sugeridas](#roadmap--melhorias-sugeridas)
 - [Licença](#licença)
 
@@ -356,9 +357,20 @@ Para rodar todas as migrations pendentes:
 npx sequelize-cli db:migrate
 ```
 
+## Problemas conhecidos
+
+Estes comportamentos foram identificados lendo o código-fonte atual e valem a atenção de quem for consumir ou evoluir a API:
+
+- **`POST /login` não interrompe a execução em caso de credenciais inválidas.** A função interna `emailOrPasswordIsInvalid()` envia a resposta `400`, mas o código não usa `return` após chamá-la, então o fluxo continua e tenta comparar a senha mesmo sem um usuário encontrado — isso lança uma exceção não tratada (o `existingUser` é `null`) e pode derrubar a requisição em vez de simplesmente responder `400`.
+- **`PUT /categories/:id` recusa atualizações que não mudam o nome.** A verificação de nome duplicado (`Categories.findOne({ where: { name } })`) não exclui o próprio registro sendo atualizado, então enviar o mesmo `name` atual (ou até atualizar só a imagem, se `name` for reenviado) resulta em `400 Category already exists`.
+- **`file` é obrigatório "na prática" em `POST /products` e `POST /categories`**, mesmo não estando marcado como obrigatório no schema de validação (Yup): o controller acessa `request.file.filename` diretamente, e sem arquivo enviado a requisição quebra com erro 500 em vez de um `400` amigável.
+- **`PUT /categories/:id` responde `201`** (em vez do `200`, mais convencional para atualização) e retorna corpo vazio.
+- **Credenciais e segredos hardcoded**: senha do Postgres, string de conexão do MongoDB e segredo do JWT estão em texto plano no repositório (veja [Configuração](#configuração-banco-de-dados-e-segredos)) — importante trocar antes de qualquer uso além do ambiente local.
+
 ## Roadmap / melhorias sugeridas
 
 - Mover credenciais e segredos (Postgres, MongoDB, JWT, porta do servidor) para variáveis de ambiente (`.env` + `dotenv`), em vez de valores fixos no código.
+- Corrigir os problemas de fluxo listados em [Problemas conhecidos](#problemas-conhecidos) (early return no login, exclusão do próprio id na checagem de nome duplicado, validação do upload obrigatório).
 - Adicionar testes automatizados (não há nenhum no momento).
 - Adicionar scripts `start`, `test` e `migrate` ao `package.json`.
 - Tornar a porta do servidor e a URL base das imagens configuráveis.
