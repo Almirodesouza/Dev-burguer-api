@@ -1,7 +1,7 @@
-import User from '../models/User.js';
+import bcrypt from 'bcrypt';
 import { v4 } from 'uuid';
 import * as Yup from 'yup';
-import bcrypt from 'bcrypt';
+import User from '../models/User.js';
 
 class UserController {
   async store(request, response) {
@@ -23,7 +23,7 @@ class UserController {
     const existingUser = await User.findOne({ where: { email } });
 
     if (existingUser) {
-      return response.status(400).json({
+      return response.status(409).json({
         message: 'Email already registered!',
       });
     }

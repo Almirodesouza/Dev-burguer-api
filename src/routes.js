@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import userController from './app/controllers/userController.js';
-import loginController from './app/controllers/loginController.js';
-import productsController from './app/controllers/productsController.js';
-import categoriesController from './app/controllers/categoriesController.js';
-import orderController from './app/controllers/orderController.js';
 import multer from 'multer';
-import multerConfig from './config/multer.cjs';
-import authMiddleware from './app/middlewares/auth.js';
+import categoriesController from './app/controllers/categoriesController.js';
+import loginController from './app/controllers/loginController.js';
+import orderController from './app/controllers/orderController.js';
+import productsController from './app/controllers/productsController.js';
+import userController from './app/controllers/userController.js';
 import adminMiddleware from './app/middlewares/admin.js';
+import authMiddleware from './app/middlewares/auth.js';
+import multerConfig from './config/multer.cjs';
 
 const routes = new Router();
 
@@ -29,7 +29,7 @@ routes.put(
   uploud.single('file'),
   productsController.update,
 );
-routes.get('/products/', productsController.index);
+routes.get('/products', productsController.index);
 
 routes.post(
   '/categories',
